@@ -1,6 +1,8 @@
 package fasttrackit.tests;
 
+import fasttrackit.DriverFactory;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
 import static fasttrackit.DriverFactory.getDriver;
@@ -17,5 +19,9 @@ public class TestUtils {
     public static void mouseClick(By locator){
         Actions actions = new Actions(getDriver());
         actions.click(getDriver().findElement(locator)).perform();
-    }
+        }
+
+        public static WebElement getSuccessMessageContainer(){
+           return DriverFactory.getDriver().findElement(By.className("success-msg"));
+        }
 }
