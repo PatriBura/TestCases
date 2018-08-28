@@ -43,4 +43,14 @@ public class TestUtils {
         }
 
     }
+    public static List<WebElement> getProductList(){
+
+        List<WebElement> list = DriverFactory.getDriver().findElements(By.xpath("//li[@class='item last']"));
+
+        return list;
+    }
+    public static List<WebElement> getWishlistProducts(){
+        List<WebElement> tableRows = DriverFactory.getDriver().findElements(By.xpath("//*[@class='fieldset']/table/tbody/tr"));
+        return tableRows;
+    }
 }
