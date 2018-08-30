@@ -3,7 +3,7 @@ package fasttrackit.tests.wishlist;
 
 import fasttrackit.DriverFactory;
 import fasttrackit.LoginForm;
-import fasttrackit.org.webviews.WishlistButton;
+import fasttrackit.org.webviews.ItemPageButton;
 import fasttrackit.tests.TestBase;
 import fasttrackit.tests.TestUtils;
 import org.junit.Test;
@@ -18,15 +18,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 
 public class WishlistTest extends TestBase {
+    @Test
+    public void accountLogin(){
+        TestUtils.mouseClick(By.linkText("ACCOUNT"));
+        TestUtils.mouseClick(By.linkText("Log In"));
+        LoginForm loginForm = PageFactory.initElements(DriverFactory.getDriver(), LoginForm.class);
+        loginForm.login("patribura@mailinator.com", "sakuralove13");
+        assertThat(TestUtils.getMessageContainer("welcome-msg").getText(),is("Welcome, Patri Bura!"));
+
+    }
 
     @Test
     public void addItemToWishlist() {
 
-
         this.selectAccountSubcategory("Log In");
         this.selectItemSubcategory("MEN", "Shirts");
-        assertThat("Item could not be added to Wishlist", TestUtils.getSuccessMessageContainer().isDisplayed());
-        assertThat(TestUtils.getSuccessMessageContainer().getText(), is("Plaid Cotton Shirt has been added to your wishlist. Click here to continue shopping."));
+        assertThat("Item could not be added to Wishlist", TestUtils.getMessageContainer("success-msg").isDisplayed());
+        assertThat(TestUtils.getMessageContainer("success-msg").getText(), is("Plaid Cotton Shirt has been added to your wishlist. Click here to continue shopping."));
 
     }
 
@@ -37,10 +45,10 @@ public class WishlistTest extends TestBase {
         TestUtils.mouseClick(By.linkText("MY WISHLIST"));
         TestUtils.mouseClick(By.linkText("EDIT"));
         TestUtils.mouseClick(By.id("option79"));
+        String productName = TestUtils.diplayProductName().getText();
         TestUtils.mouseClick(By.linkText("Update Wishlist"));
-
-        assertThat("Item could not be edited in Wishlist", TestUtils.getSuccessMessageContainer().isDisplayed());
-        assertThat(TestUtils.getSuccessMessageContainer().getText(), is("Linen Blazer has been updated in your wishlist."));
+        assertThat("Item could not be edited in Wishlist", TestUtils.getMessageContainer("success-msg").isDisplayed());
+        assertThat(TestUtils.getMessageContainer("success-msg").getText().toLowerCase(), is(productName.toLowerCase() + " has been updated in your wishlist."));
 
 
         delay();
@@ -49,14 +57,12 @@ public class WishlistTest extends TestBase {
 
 
     @Test
-    public void addWishlistItemToCart() {
+    public void checkForDuplicateWishlistItems() {
         String productName = "nolita cami";
         selectAccountSubcategory("Log In");
         TestUtils.mouseOverAndClickLast(By.linkText("WOMEN"), By.linkText("Tops & Blouses"));
         List<WebElement> list = TestUtils.getProductList();
 
-//        TestUtils.mouseClick(By.linkText("NOLITA CAMI"));
-//        TestUtils.mouseClick(By.linkText("Add to Wishlist"));
 
         for (WebElement element : list) {
             WebElement nameAnchor = element.findElement(By.cssSelector(".product-info .product-name a"));
@@ -88,6 +94,21 @@ public class WishlistTest extends TestBase {
         assertThat("Item was added " + counter + " times", counter <= 1);
 
         delay();
+    }
+    @Test
+    public void addItemToCart(){
+        TestUtils.mouseOverAndClickLast(By.linkText("MEN"), By.linkText("Shirts"));
+        ItemPageButton displayPageButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        displayPageButton.getViewDetailsButton().click();
+        TestUtils.mouseClick(By.id("option28"));
+        TestUtils.mouseClick(By.id("option79"));
+        String productName = TestUtils.diplayProductName().getText();
+        ItemPageButton itemPageButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        itemPageButton.getAddToCartButton().click();
+
+        delay();
+        assertThat(TestUtils.getMessageContainer("success-msg").getText().toLowerCase(), is(productName.toLowerCase() + " was added to your shopping cart."));
+
     }
 
 
@@ -126,8 +147,8 @@ public class WishlistTest extends TestBase {
 
     private void selectItemSubcategory(String category, String subcategory) {
         TestUtils.mouseOverAndClickLast(By.linkText(category), By.linkText(subcategory));
-        WishlistButton wishlistButton = PageFactory.initElements(DriverFactory.getDriver(), WishlistButton.class);
-        wishlistButton.getAddToWishlistLink().click();
+        ItemPageButton wishlistButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        wishlistButton.getAddToWishlistButton().click();
 
     }
 

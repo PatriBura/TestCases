@@ -27,8 +27,8 @@ public class TestUtils {
         actions.click(getDriver().findElement(locator)).perform();
     }
 
-    public static WebElement getSuccessMessageContainer() {
-        return DriverFactory.getDriver().findElement(By.className("success-msg"));
+    public static WebElement getMessageContainer(String className) {
+        return DriverFactory.getDriver().findElement(By.className(className));
     }
 
     public static void mouseClickOnLink(String href) {
@@ -43,6 +43,12 @@ public class TestUtils {
         }
 
     }
+
+public static WebElement diplayProductName(){
+        WebElement productName = DriverFactory.getDriver().findElement(By.xpath("//div[@class='product-shop']/div[1]/span"));
+        return productName;
+}
+
     public static List<WebElement> getProductList(){
 
         List<WebElement> list = DriverFactory.getDriver().findElements(By.xpath("//li[@class='item last']"));
