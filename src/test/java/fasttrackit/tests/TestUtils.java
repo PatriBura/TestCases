@@ -1,6 +1,7 @@
 package fasttrackit.tests;
 
 import fasttrackit.DriverFactory;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -43,11 +44,30 @@ public class TestUtils {
         }
 
     }
+    public static WebElement wishlistItemComment(){
+        WebElement commentField = DriverFactory.getDriver().findElement(By.xpath("//div[@class='fieldset']/table/tbody/tr/td[2]/textarea"));
+   return commentField;
+    }
 
-public static WebElement diplayProductName(){
+    public static WebElement wishlistItemQuantity(){
+        WebElement commentField = DriverFactory.getDriver().findElement(By.xpath("//div[@class='fieldset']/table/tbody/tr/td[3]/div/div/input"));
+        return commentField;
+    }
+
+    public static WebElement diplayProductName(){
         WebElement productName = DriverFactory.getDriver().findElement(By.xpath("//div[@class='product-shop']/div[1]/span"));
         return productName;
-}
+    }
+
+    public static WebElement deleteItemButton(){
+        WebElement commentField = DriverFactory.getDriver().findElement(By.xpath("//div[@class='fieldset']/table/tbody/tr/td[6]/a"));
+        return commentField;
+    }
+
+    public static Alert getAlert(){
+        Alert alert = DriverFactory.getDriver().switchTo().alert();
+        return alert;
+    }
 
     public static List<WebElement> getProductList(){
 

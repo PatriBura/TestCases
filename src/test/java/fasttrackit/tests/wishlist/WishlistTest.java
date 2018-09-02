@@ -7,6 +7,7 @@ import fasttrackit.org.webviews.ItemPageButton;
 import fasttrackit.tests.TestBase;
 import fasttrackit.tests.TestUtils;
 import org.junit.Test;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -44,7 +45,11 @@ public class WishlistTest extends TestBase {
         this.selectAccountSubcategory("Log In");
         TestUtils.mouseClick(By.linkText("MY WISHLIST"));
         TestUtils.mouseClick(By.linkText("EDIT"));
-        TestUtils.mouseClick(By.id("option79"));
+        try {
+            TestUtils.mouseClick(By.id("option79"));
+        } catch(Exception e){
+            System.out.println(e);
+        }
         String productName = TestUtils.diplayProductName().getText();
         TestUtils.mouseClick(By.linkText("Update Wishlist"));
         assertThat("Item could not be edited in Wishlist", TestUtils.getMessageContainer("success-msg").isDisplayed());
@@ -105,9 +110,71 @@ public class WishlistTest extends TestBase {
         String productName = TestUtils.diplayProductName().getText();
         ItemPageButton itemPageButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
         itemPageButton.getAddToCartButton().click();
-
-        delay();
         assertThat(TestUtils.getMessageContainer("success-msg").getText().toLowerCase(), is(productName.toLowerCase() + " was added to your shopping cart."));
+
+    }
+
+    @Test
+    public void addItemComment(){
+    this.selectAccountSubcategory("Log In");
+    TestUtils.mouseClick(By.linkText("MY WISHLIST"));
+    WebElement itemComment = TestUtils.wishlistItemComment();
+    itemComment.sendKeys("Birthday Gift");
+    ItemPageButton updateWishlistButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+    updateWishlistButton.getUpdateWishlistButton().click();
+     WebElement itemNewComment = TestUtils.wishlistItemComment();
+     assertThat(itemNewComment.getText(),is("Birthday Gift"));
+
+    }
+
+    @Test
+    public void updateItemQuantity(){
+        this.selectAccountSubcategory("Log In");
+        TestUtils.mouseClick(By.linkText("MY WISHLIST"));
+        WebElement itemQuantity = TestUtils.wishlistItemQuantity();
+        String value = itemQuantity.getAttribute("value");
+        Integer quantityBeforeUpdate = Integer.parseInt(value);
+        Integer increasedQuantity = quantityBeforeUpdate + 1;
+        String increasedQuantityString = increasedQuantity.toString();
+        itemQuantity.clear();
+        itemQuantity.sendKeys(increasedQuantityString);
+        ItemPageButton updateWishlistButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        updateWishlistButton.getUpdateWishlistButton().click();
+        WebElement itemNewQuantity = TestUtils.wishlistItemQuantity();
+        assertThat(itemNewQuantity.getAttribute("value"), is(increasedQuantityString));
+
+    }
+
+    @Test
+    public void deleteWishlistItem(){
+        this.selectAccountSubcategory("Log In");
+        TestUtils.mouseClick(By.linkText("MY WISHLIST"));
+        int wishlistProductsCount = TestUtils.getWishlistProducts().size();
+        WebElement deleteItemButton = TestUtils.deleteItemButton();
+        deleteItemButton.click();
+        Alert alert = TestUtils.getAlert();
+        alert.accept();
+        int wishlistProductsCountAfterDelete = TestUtils.getWishlistProducts().size();
+        assertThat("No item was not deleted", wishlistProductsCountAfterDelete < wishlistProductsCount);
+        delay();
+    }
+
+    @Test
+    public void addAllWishlistItemsToCart(){
+        this.selectAccountSubcategory("Log In");
+        TestUtils.mouseClick(By.linkText("MY WISHLIST"));
+        Integer wishlistProductsCount = TestUtils.getWishlistProducts().size();
+        ItemPageButton addAllToCartButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        addAllToCartButton.getAddAllToCartButton().click();
+        String successMessage = "";
+        try {
+            successMessage = TestUtils.getMessageContainer("success-msg").getText();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+        String matchingMessage = wishlistProductsCount.toString() + " product(s) have been added to shopping cart:";
+        assertThat("Items were not added to cart", successMessage.contains(matchingMessage));
 
     }
 
