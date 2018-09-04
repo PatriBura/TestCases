@@ -25,7 +25,7 @@ public class WishlistTest extends TestBase {
         TestUtils.mouseClick(By.linkText("Log In"));
         LoginForm loginForm = PageFactory.initElements(DriverFactory.getDriver(), LoginForm.class);
         loginForm.login("patribura@mailinator.com", "sakuralove13");
-        assertThat(TestUtils.getMessageContainer("welcome-msg").getText(),is("Welcome, Patri Bura!"));
+        assertThat(TestUtils.getMessageContainer("welcome-msg").getText(),is("WELCOME, PATRI BURA!"));
 
     }
 
@@ -63,9 +63,9 @@ public class WishlistTest extends TestBase {
 
     @Test
     public void checkForDuplicateWishlistItems() {
-        String productName = "nolita cami";
+        String productName = "plaid cotton shirt";
         selectAccountSubcategory("Log In");
-        TestUtils.mouseOverAndClickLast(By.linkText("WOMEN"), By.linkText("Tops & Blouses"));
+        TestUtils.mouseOverAndClickLast(By.linkText("MEN"), By.linkText("Shirts"));
         List<WebElement> list = TestUtils.getProductList();
 
 
@@ -100,6 +100,26 @@ public class WishlistTest extends TestBase {
 
         delay();
     }
+
+    @Test
+    public void addAllWishlistItemsToCart(){
+        this.selectAccountSubcategory("Log In");
+        TestUtils.mouseClick(By.linkText("MY WISHLIST"));
+        Integer wishlistProductsCount = TestUtils.getWishlistProducts().size();
+        ItemPageButton addAllToCartButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
+        addAllToCartButton.getAddAllToCartButton().click();
+        String successMessage = "";
+        try {
+            successMessage = TestUtils.getMessageContainer("success-msg").getText();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+
+        String matchingMessage = wishlistProductsCount.toString() + " product(s) have been added to shopping cart:";
+        assertThat("Items were not added to cart", successMessage.contains(matchingMessage));
+
+    }
+
     @Test
     public void addItemToCart(){
         TestUtils.mouseOverAndClickLast(By.linkText("MEN"), By.linkText("Shirts"));
@@ -159,24 +179,6 @@ public class WishlistTest extends TestBase {
         delay();
     }
 
-    @Test
-    public void addAllWishlistItemsToCart(){
-        this.selectAccountSubcategory("Log In");
-        TestUtils.mouseClick(By.linkText("MY WISHLIST"));
-        Integer wishlistProductsCount = TestUtils.getWishlistProducts().size();
-        ItemPageButton addAllToCartButton = PageFactory.initElements(DriverFactory.getDriver(), ItemPageButton.class);
-        addAllToCartButton.getAddAllToCartButton().click();
-        String successMessage = "";
-        try {
-            successMessage = TestUtils.getMessageContainer("success-msg").getText();
-        } catch (Exception e){
-            System.out.println(e);
-        }
-
-        String matchingMessage = wishlistProductsCount.toString() + " product(s) have been added to shopping cart:";
-        assertThat("Items were not added to cart", successMessage.contains(matchingMessage));
-
-    }
 
 
     private void selectAccountSubcategory(String buttonName) {
